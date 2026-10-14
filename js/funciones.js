@@ -4,7 +4,7 @@ function actualizarcarrito(){
     let total = 0
     carrito.forEach(panaderia =>{
         let item = document.createElement("li")
-        const cantidad = panaderia.cantidad ?? 1
+        const cantidad = panaderia.cantidad
         item.textContent = `${panaderia.nombre} - $${panaderia.precio} x ${cantidad}`
         lista.appendChild(item)
         total += panaderia.precio * cantidad
