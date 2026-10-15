@@ -14,7 +14,13 @@ function actualizarcarrito(){
 
 botones.forEach((boton, index) => {
     boton.addEventListener("click", () => {
-        carrito.push({...panaderia[index], cantidad: 1})
+        const producto = panaderia[index]
+        const productoEnCarrito = carrito.find(item => item.id === producto.id)
+        if (productoEnCarrito) {
+            productoEnCarrito.cantidad += 1
+        } else {
+            carrito.push({...producto, cantidad: 1})
+        }
         actualizarcarrito()
     })
 })
