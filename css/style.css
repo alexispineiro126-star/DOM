@@ -16,9 +16,11 @@ body {
 
 .box{
     width: 200px;
-    height: 200px;
+    min-height: 200px;
     background-color: #b8c4cd;
     margin: 20px auto;
+    padding: 16px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;

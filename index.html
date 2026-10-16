@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script defer src="./js/productos.js"></script>
+    <title>Panadería</title>
     <script defer src="./js/main.js"></script>
-    <script defer src="./js/funciones.js"></script>
     <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
@@ -16,12 +14,10 @@
     <h1 class="h1">Panadería</h1>
     <section>
         <div class="formulario">
-            <h2>Formulario de compra</h2>
+            <h2>Agregar al carrito</h2>
             <form id="formulario">
-                <label for="nombre">Nombre del producto:</label>
-                <input type="text" id="nombre" class="input" name="nombre" required>
-                <label for="precio">Precio:</label>
-                <input type="number" id="precio" class="input" name="precio" min="1" step="0.01" required>
+                <label for="producto-compra">Producto:</label>
+                <select id="producto-compra" class="input" name="producto" required></select>
                 <label for="cantidad">Cantidad:</label>
                 <input type="number" id="cantidad" class="input" name="cantidad" min="1" step="1" required>
                 <button type="submit" class="enviar">Agregar al carrito</button>
@@ -40,32 +36,6 @@
             <button class="vaciar" id="vaciar">Vaciar carrito</button>
         </div>
     </section>
-    <main class="main" id="productos">
-        <div class="box">
-            <h3>pan</h3>
-            <p class="precio">Precio: $1.000</p>
-            <button class="btn" data-producto-id="1" type="button">+ Agregar al Carrito</button>
-        </div>
-        <div class="box">
-            <h3 class="nombre">galletitas</h3>
-            <p class="precio">Precio: $2.000</p>
-            <button class="btn" data-producto-id="2" type="button">+ Agregar al Carrito</button>
-        </div>
-        <div class="box">
-            <h3 class="nombre">facturas</h3>
-            <p class="precio">Precio: $1.400</p>
-            <button class="btn" data-producto-id="3" type="button">+ Agregar al Carrito</button>
-        </div>
-        <div class="box">
-            <h3 class="nombre">chipitas</h3>
-            <p class="precio">Precio: $1.200</p>
-            <button class="btn" data-producto-id="4" type="button">+ Agregar al Carrito</button>
-        </div>
-        <div class="box">
-            <h3 class="nombre">torta</h3>
-            <p class="precio">Precio: $1.500</p>
-            <button class="btn" data-producto-id="5" type="button">+ Agregar al Carrito</button>
-        </div>
-    </main>
+    <main class="main" id="productos" aria-live="polite"></main>
 </body>
 </html>
