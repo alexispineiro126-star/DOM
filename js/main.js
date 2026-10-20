@@ -11,6 +11,7 @@ const listaProductos = document.getElementById("productos")
 const listaCarrito = document.getElementById("lista")
 const panelCarrito = document.querySelector(".carrito")
 const formulario = document.getElementById("formulario")
+const formularioProducto = document.getElementById("formulario-producto")
 const selecionProducto = document.getElementById("producto-compra")
 const busqueda = document.getElementById("busqueda")
 
@@ -81,14 +82,6 @@ document.querySelector(".cerrar").addEventListener("click", () => {
     panelCarrito.classList.remove("active")
 })
 
-busqueda.addEventListener("input", () => {
-    const texto = busqueda.value.toLocaleLowerCase()
-    listaProductos.querySelectorAll(".box").forEach(tarjeta => {
-        const nombre = tarjeta.querySelector("h3").textContent.toLocaleLowerCase()
-        tarjeta.classList.toggle("oculto", !nombre.includes(texto))
-    })
-})
-
 formulario.addEventListener("submit", evento => {
     evento.preventDefault();
     const producto = panaderia.find(item => item.id === Number(selecionProducto.value))
@@ -99,4 +92,39 @@ formulario.addEventListener("submit", evento => {
     agregarAlCarrito(producto, cantidad)
     formulario.reset()
 })
+
+formularioProducto.addEventListener("submit", evento => {
+    evento.preventDefault()
+    const nombre = document.getElementById("nombre-producto").value.trim()
+    const marca = document.getElementById("marca-producto").value.trim()
+    const precio = Number(document.getElementById("precio-producto").value)
+    const stock = Number(document.getElementById("stock-producto").value)
+    if (!nombre || !Number.isFinite(precio) || precio < 1 || !Number.isInteger(stock) || stock < 0) {
+        return
+    }
+    const id = panaderia.length
+        ? Math.max(...panaderia.map(producto => producto.id)) + 1
+        : 1
+    panaderia.push({
+        id,
+        nombre,
+        marca: marca || "Sin marca",
+        precio,
+        stock
+    })
+    renderizarProductos()
+    filtrarProductos()
+    formularioProducto.reset()
+})
+
+function filtrarProductos() {
+    const texto = busqueda.value.toLocaleLowerCase()
+    listaProductos.querySelectorAll(".box").forEach(tarjeta => {
+        const nombre = tarjeta.querySelector("h3").textContent.toLocaleLowerCase()
+        tarjeta.classList.toggle("oculto", !nombre.includes(texto))
+    })
+}
+
+busqueda.addEventListener("input", filtrarProductos)
+
 renderizarProductos()
