@@ -10,19 +10,12 @@ const carrito = []
 const listaProductos = document.getElementById("productos")
 const listaCarrito = document.getElementById("lista")
 const panelCarrito = document.querySelector(".carrito")
-const formulario = document.getElementById("formulario")
 const formularioProducto = document.getElementById("formulario-producto")
-const selecionProducto = document.getElementById("producto-compra")
 const busqueda = document.getElementById("busqueda")
 
 function renderizarProductos() {
     listaProductos.replaceChildren()
-    selecionProducto.replaceChildren()
 panaderia.forEach(producto => {
-    const opcion = document.createElement("option")
-    opcion.value = producto.id
-    opcion.textContent = producto.nombre
-    selecionProducto.appendChild(opcion)
 const tarjeta = document.createElement("article")
     tarjeta.className = "box"
 const nombre = document.createElement("h3")
@@ -82,29 +75,17 @@ document.querySelector(".cerrar").addEventListener("click", () => {
     panelCarrito.classList.remove("active")
 })
 
-formulario.addEventListener("submit", evento => {
-    evento.preventDefault();
-    const producto = panaderia.find(item => item.id === Number(selecionProducto.value))
-    const cantidad = Number(document.getElementById("cantidad").value)
-    if (!producto || !Number.isInteger(cantidad) || cantidad < 1) {
-        return;
-    }
-    agregarAlCarrito(producto, cantidad)
-    formulario.reset()
-})
-
 formularioProducto.addEventListener("submit", evento => {
     evento.preventDefault()
-    const nombre = document.getElementById("nombre-producto").value.trim()
-    const marca = document.getElementById("marca-producto").value.trim()
+    const nombre = document.getElementById("nombre-producto").value
+    const marca = document.getElementById("marca-producto").value
     const precio = Number(document.getElementById("precio-producto").value)
     const stock = Number(document.getElementById("stock-producto").value)
     if (!nombre || !Number.isFinite(precio) || precio < 1 || !Number.isInteger(stock) || stock < 0) {
         return
     }
     const id = panaderia.length
-        ? Math.max(...panaderia.map(producto => producto.id)) + 1
-        : 1
+        ? Math.max(...panaderia.map(producto => producto.id)) + 1 : 1
     panaderia.push({
         id,
         nombre,
