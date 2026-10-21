@@ -16,8 +16,7 @@ let carrito = []
 const carritoGuardado = localStorage.getItem("carrito")
 
 const productosGuardados = carritoGuardado !== null
-    ? JSON.parse(carritoGuardado)
-    : []
+    ? JSON.parse(carritoGuardado) : []
 
 productosGuardados.forEach(({ id, cantidad }) => {
     const producto = productos.find((item) => item.id === id)
@@ -106,8 +105,10 @@ function renderizarProductos() {
         boton.className = "btn"
         boton.type = "button"
         boton.textContent = "+ Agregar al carrito"
-        boton.disabled = producto.stock === 0
         boton.addEventListener("click", () => {
+            if (producto.stock === 0){
+                return
+            }
             agregarAlCarrito(producto.id)
         })
         tarjeta.append(nombre, marca, precio, stock, boton)
@@ -134,20 +135,19 @@ function actualizarCarrito() {
         const botonRestar = document.createElement("button")
         botonRestar.type = "button"
         botonRestar.textContent = "−"
-        botonRestar.setAttribute("aria-label", `Quitar una unidad de ${producto.nombre}`)
         botonRestar.addEventListener("click", () => {
             cambiarCantidad(producto.id, -1)
         })
 
         const cantidad = document.createElement("span")
         cantidad.textContent = item.cantidad
-        cantidad.setAttribute("aria-label", "Cantidad")
         const botonSumar = document.createElement("button")
         botonSumar.type = "button"
         botonSumar.textContent = "+"
-        botonSumar.setAttribute("aria-label", `Agregar una unidad de ${producto.nombre}`)
-        botonSumar.disabled = item.cantidad >= producto.stock
         botonSumar.addEventListener("click", () => {
+            if (item.cantidad >= producto.stock) {
+                return
+            }
             cambiarCantidad(producto.id, 1)
         })
 
