@@ -1,4 +1,4 @@
-const panaderia = [
+const productos = [
     { id: 1, nombre: "pan", marca: "baguettes", precio: 1000, stock: 50 },
     { id: 2, nombre: "galletitas", marca: "Diversión", precio: 2000, stock: 50 },
     { id: 3, nombre: "facturas", marca: "central", precio: 1400, stock: 12 },
@@ -6,65 +6,179 @@ const panaderia = [
     { id: 5, nombre: "torta", marca: "todo dulce", precio: 1500, stock: 4 }
 ]
 
-const carrito = []
 const listaProductos = document.getElementById("productos")
 const listaCarrito = document.getElementById("lista")
 const panelCarrito = document.querySelector(".carrito")
-const formularioProducto = document.getElementById("formulario-producto")
 const busqueda = document.getElementById("busqueda")
+const totalCarrito = document.getElementById("total")
 
-function renderizarProductos() {
-    listaProductos.replaceChildren()
-panaderia.forEach(producto => {
-const tarjeta = document.createElement("article")
-    tarjeta.className = "box"
-const nombre = document.createElement("h3")
-    nombre.textContent = producto.nombre
-const marca = document.createElement("p")
-    marca.textContent = `Marca: ${producto.marca}`
-const precio = document.createElement("p")
-    precio.className = "precio"
-    precio.textContent = `Precio: $${producto.precio.toLocaleString("es-AR")}`
-const boton = document.createElement("button")
-    boton.className = "btn"
-    boton.type = "button"
-    boton.textContent = "+ Agregar al carrito"
-    boton.addEventListener("click", () => agregarAlCarrito(producto))
-    tarjeta.append(nombre, marca, precio, boton)
-    listaProductos.appendChild(tarjeta)
+let carrito = []
+const carritoGuardado = localStorage.getItem("carrito")
+
+const productosGuardados = carritoGuardado !== null
+    ? JSON.parse(carritoGuardado)
+    : []
+
+productosGuardados.forEach(({ id, cantidad }) => {
+    const producto = productos.find((item) => item.id === id)
+    if (producto !== undefined && cantidad > 0) {
+        const cantidadFinal = cantidad > producto.stock
+            ? producto.stock
+            : cantidad
+        carrito.push({
+            id: producto.id,
+            cantidad: cantidadFinal
+        })
+    }
+})
+
+function guardarCarrito() {
+    localStorage.setItem("carrito", JSON.stringify(carrito))
+    actualizarCarrito()
+}
+
+function buscarEnCarrito(id) {
+    return carrito.find( (item) => {
+        return item.id === id
     })
 }
 
-function agregarAlCarrito(producto, cantidad = 1) {
-    const productoEnCarrito = carrito.find(item => item.id === producto.id)
-    if (productoEnCarrito) {
-        productoEnCarrito.cantidad += cantidad
-    } else {
-        carrito.push({ ...producto, cantidad })
+function agregarAlCarrito(id) {
+    const producto = productos.find( (item) => {
+        return item.id === id
+    })
+    const productoEnCarrito = buscarEnCarrito(id)
+
+if (productoEnCarrito !== undefined) {
+    if (productoEnCarrito.cantidad < producto.stock) {
+        productoEnCarrito.cantidad++
     }
-    actualizarCarrito()
+} else if (producto.stock > 0) {
+    carrito.push({ id: producto.id, cantidad: 1 })
+}
+guardarCarrito()
+}
+
+function cambiarCantidad(id, cambio) {
+    const producto = productos.find( (item) => {
+        return item.id === id
+    })
+    const productoEnCarrito = buscarEnCarrito(id)
+    if (productoEnCarrito === undefined) {
+        return
+    }
+
+productoEnCarrito.cantidad += cambio
+
+if (productoEnCarrito.cantidad <= 0) {
+    eliminarDelCarrito(id)
+    return
+}
+
+if (productoEnCarrito.cantidad > producto.stock) {
+    productoEnCarrito.cantidad = producto.stock
+}
+guardarCarrito()
+}
+
+function eliminarDelCarrito(id) {
+    carrito = carrito.filter( (item) =>{
+        return item.id !== id
+    })
+    guardarCarrito()
+}
+
+function renderizarProductos() {
+    listaProductos.replaceChildren()
+    productos.forEach( (producto) => {
+        const tarjeta = document.createElement("article")
+        tarjeta.className = "box"
+        const nombre = document.createElement("h3")
+        nombre.textContent = producto.nombre
+        const marca = document.createElement("p")
+        marca.textContent = `Marca: ${producto.marca}`
+        const precio = document.createElement("p")
+        precio.className = "precio"
+        precio.textContent = `Precio: $${producto.precio.toLocaleString("es-AR")}`
+        const stock = document.createElement("p")
+        stock.textContent = `Disponible: ${producto.stock}`
+        const boton = document.createElement("button")
+        boton.className = "btn"
+        boton.type = "button"
+        boton.textContent = "+ Agregar al carrito"
+        boton.disabled = producto.stock === 0
+        boton.addEventListener("click", () => {
+            agregarAlCarrito(producto.id)
+        })
+        tarjeta.append(nombre, marca, precio, stock, boton)
+        listaProductos.appendChild(tarjeta)
+    })
+    filtrarProductos()
 }
 
 function actualizarCarrito() {
     listaCarrito.replaceChildren()
     let total = 0
-    carrito.forEach(producto => {
-        const item = document.createElement("li")
-        item.textContent = `${producto.nombre} - $${producto.precio.toLocaleString("es-AR")} x ${producto.cantidad}`
-        listaCarrito.appendChild(item)
-        total += producto.precio * producto.cantidad
-    });
-    document.getElementById("total").textContent = `Total: $${total.toLocaleString("es-AR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    })}`
+    carrito.forEach( (item) => {
+        const producto = productos.find( (productoCatalogo) => {
+            return productoCatalogo.id === item.id
+        })
+        if(producto === undefined) {
+            return
+        }
+        const elemento = document.createElement("li")
+        const descripcion = document.createElement("span")
+        descripcion.textContent = `${producto.nombre} - $${producto.precio.toLocaleString("es-AR")}`
+        const controles = document.createElement("div")
+        controles.className = "controles-cantidad"
+        const botonRestar = document.createElement("button")
+        botonRestar.type = "button"
+        botonRestar.textContent = "−"
+        botonRestar.setAttribute("aria-label", `Quitar una unidad de ${producto.nombre}`)
+        botonRestar.addEventListener("click", () => {
+            cambiarCantidad(producto.id, -1)
+        })
+
+        const cantidad = document.createElement("span")
+        cantidad.textContent = item.cantidad
+        cantidad.setAttribute("aria-label", "Cantidad")
+        const botonSumar = document.createElement("button")
+        botonSumar.type = "button"
+        botonSumar.textContent = "+"
+        botonSumar.setAttribute("aria-label", `Agregar una unidad de ${producto.nombre}`)
+        botonSumar.disabled = item.cantidad >= producto.stock
+        botonSumar.addEventListener("click", () => {
+            cambiarCantidad(producto.id, 1)
+        })
+
+        const botonEliminar = document.createElement("button")
+        botonEliminar.type = "button"
+        botonEliminar.className = "btn-eliminar"
+        botonEliminar.textContent = "Eliminar"
+        botonEliminar.addEventListener("click", () => {
+            eliminarDelCarrito(producto.id)
+        })
+        controles.append(botonRestar, cantidad, botonSumar)
+        elemento.append(descripcion, controles, botonEliminar)
+        listaCarrito.appendChild(elemento)
+        total += producto.precio * item.cantidad
+    })
+    totalCarrito.textContent = `Total: $${total.toLocaleString("es-AR")}`
+}
+
+function filtrarProductos() {
+    const texto = busqueda.value.toLocaleLowerCase()
+    const tarjetas = listaProductos.querySelectorAll(".box")
+
+    tarjetas.forEach( (tarjeta) => {
+        const nombre = tarjeta.querySelector("h3").textContent.toLocaleLowerCase()
+        tarjeta.classList.toggle("oculto", !nombre.includes(texto))
+    })
 }
 
 document.getElementById("vaciar").addEventListener("click", () => {
-    if (carrito.length > 0 && confirm("¿Estás seguro que deseas vaciar el carrito?")) {
-        carrito.length = 0
-        actualizarCarrito()
-    }
+    carrito = []
+    guardarCarrito()
 })
 
 document.getElementById("ver-carrito").addEventListener("click", () => {
@@ -75,37 +189,7 @@ document.querySelector(".cerrar").addEventListener("click", () => {
     panelCarrito.classList.remove("active")
 })
 
-formularioProducto.addEventListener("submit", evento => {
-    evento.preventDefault()
-    const nombre = document.getElementById("nombre-producto").value
-    const marca = document.getElementById("marca-producto").value
-    const precio = Number(document.getElementById("precio-producto").value)
-    const stock = Number(document.getElementById("stock-producto").value)
-    if (!nombre || !Number.isFinite(precio) || precio < 1 || !Number.isInteger(stock) || stock < 0) {
-        return
-    }
-    const id = panaderia.length
-        ? Math.max(...panaderia.map(producto => producto.id)) + 1 : 1
-    panaderia.push({
-        id,
-        nombre,
-        marca: marca || "Sin marca",
-        precio,
-        stock
-    })
-    renderizarProductos()
-    filtrarProductos()
-    formularioProducto.reset()
-})
-
-function filtrarProductos() {
-    const texto = busqueda.value.toLocaleLowerCase()
-    listaProductos.querySelectorAll(".box").forEach(tarjeta => {
-        const nombre = tarjeta.querySelector("h3").textContent.toLocaleLowerCase()
-        tarjeta.classList.toggle("oculto", !nombre.includes(texto))
-    })
-}
-
 busqueda.addEventListener("input", filtrarProductos)
 
 renderizarProductos()
+actualizarCarrito()

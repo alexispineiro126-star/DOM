@@ -9,31 +9,15 @@
 </head>
 <body>
     <header class="header">
-        <input type="text" id="busqueda" class="input" placeholder="Buscar  productos...">
+        <input type="search" id="busqueda" class="input" placeholder="Buscar productos..." aria-label="Buscar productos">
     </header>
     <h1 class="h1">Panadería</h1>
-    <section>
-        <div class="formulario">
-            <h2>Agregar producto al catálogo</h2>
-            <form id="formulario-producto">
-                <label for="nombre-producto">Nombre:</label>
-                <input type="text" id="nombre-producto" class="input" name="nombre" required>
-                <label for="marca-producto">Marca:</label>
-                <input type="text" id="marca-producto" class="input" name="marca" placeholder="Opcional">
-                <label for="precio-producto">Precio:</label>
-                <input type="number" id="precio-producto" class="input" name="precio" min="1" step="1" required>
-                <label for="stock-producto">Stock inicial:</label>
-                <input type="number" id="stock-producto" class="input" name="stock" min="0" step="1" value="1" required>
-                <button type="submit" class="enviar">Agregar producto</button>
-            </form>
-        </div>
-    </section>
     <section class="section">
-        <button id="ver-carrito" class="abrir"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+        <button id="ver-carrito" class="abrir" type="button" aria-label="Abrir carrito"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
 <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
 </svg></button>
         <div class="carrito">
-            <button class="cerrar">X</button>
+            <button class="cerrar" type="button" aria-label="Cerrar carrito">X</button>
             <h3>Carrito</h3>
             <ul id="lista"></ul>
             <p class="total" id="total">Total: $0</p>
